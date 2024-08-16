@@ -1,0 +1,4 @@
+.idea
+dist/*
+coverage.out
+cache/testdata/*
