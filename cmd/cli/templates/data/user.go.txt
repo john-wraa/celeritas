@@ -2,7 +2,7 @@ package data
 
 import (
 	"errors"
-	"github.com/johnwr-response/celeritas"
+	"github.com/john-wraa/celeritas"
 	up "github.com/upper/db/v4"
 	"golang.org/x/crypto/bcrypt"
 	"time"

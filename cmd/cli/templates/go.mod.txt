@@ -6,7 +6,7 @@ require (
 	github.com/CloudyKit/jet/v6 v6.2.0
 	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/go-chi/chi/v5 v5.1.0
-	github.com/johnwr-response/celeritas v0.0.0-00010101000000-000000000000
+	github.com/john-wraa/celeritas v0.0.0-00010101000000-000000000000
 	github.com/justinas/nosurf v1.1.1
 	github.com/ory/dockertest/v3 v3.11.0
 	github.com/upper/db/v4 v4.8.0

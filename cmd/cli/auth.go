@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
 	"log"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 func doAuth() error {
@@ -29,62 +30,60 @@ func doAuth() error {
 		exitGracefully(err)
 	}
 
-	// TODO: Somewhere down the road, get rid of the `/myapp` hardcoding
-
 	// copy models
-	err = copyFileFromTemplate("templates/data/user.go.txt", cel.RootPath+"/myapp/data/user.go")
+	err = copyFileFromTemplate("templates/data/user.go.txt", cel.RootPath+"/data/user.go")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/data/token.go.txt", cel.RootPath+"/myapp/data/token.go")
+	err = copyFileFromTemplate("templates/data/token.go.txt", cel.RootPath+"/data/token.go")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/data/remember_token.go.txt", cel.RootPath+"/myapp/data/remember_token.go")
+	err = copyFileFromTemplate("templates/data/remember_token.go.txt", cel.RootPath+"/data/remember_token.go")
 	if err != nil {
 		exitGracefully(err)
 	}
 
 	// copy middleware
-	err = copyFileFromTemplate("templates/middleware/auth.go.txt", cel.RootPath+"/myapp/middleware/auth.go")
+	err = copyFileFromTemplate("templates/middleware/auth.go.txt", cel.RootPath+"/middleware/auth.go")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/middleware/auth-token.go.txt", cel.RootPath+"/myapp/middleware/auth-token.go")
+	err = copyFileFromTemplate("templates/middleware/auth-token.go.txt", cel.RootPath+"/middleware/auth-token.go")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/middleware/remember.go.txt", cel.RootPath+"/myapp/middleware/remember.go")
+	err = copyFileFromTemplate("templates/middleware/remember.go.txt", cel.RootPath+"/middleware/remember.go")
 	if err != nil {
 		exitGracefully(err)
 	}
 
 	// copy handlers
-	err = copyFileFromTemplate("templates/handlers/auth-handlers.go.txt", cel.RootPath+"/myapp/handlers/auth-handlers.go")
+	err = copyFileFromTemplate("templates/handlers/auth-handlers.go.txt", cel.RootPath+"/handlers/auth-handlers.go")
 	if err != nil {
 		exitGracefully(err)
 	}
 
 	// copy emails
-	err = copyFileFromTemplate("templates/mailer/password-reset.html.gohtml", cel.RootPath+"/myapp/mail/password-reset.html.gohtml")
+	err = copyFileFromTemplate("templates/mailer/password-reset.html.gohtml", cel.RootPath+"/mail/password-reset.html.gohtml")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/mailer/password-reset.plain.gohtml", cel.RootPath+"/myapp/mail/password-reset.plain.gohtml")
+	err = copyFileFromTemplate("templates/mailer/password-reset.plain.gohtml", cel.RootPath+"/mail/password-reset.plain.gohtml")
 	if err != nil {
 		exitGracefully(err)
 	}
 
 	// copy views
-	err = copyFileFromTemplate("templates/views/login.jet", cel.RootPath+"/myapp/views/login.jet")
+	err = copyFileFromTemplate("templates/views/login.jet", cel.RootPath+"/views/login.jet")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/views/forgot.jet", cel.RootPath+"/myapp/views/forgot.jet")
+	err = copyFileFromTemplate("templates/views/forgot.jet", cel.RootPath+"/views/forgot.jet")
 	if err != nil {
 		exitGracefully(err)
 	}
-	err = copyFileFromTemplate("templates/views/reset-password.jet", cel.RootPath+"/myapp/views/reset-password.jet")
+	err = copyFileFromTemplate("templates/views/reset-password.jet", cel.RootPath+"/views/reset-password.jet")
 	if err != nil {
 		exitGracefully(err)
 	}

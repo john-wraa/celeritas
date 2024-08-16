@@ -3,12 +3,13 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/gertd/go-pluralize"
-	"github.com/iancoleman/strcase"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/fatih/color"
+	"github.com/gertd/go-pluralize"
+	"github.com/iancoleman/strcase"
 )
 
 func doMake(arg2, arg3 string) error {
@@ -44,8 +45,7 @@ func doMake(arg2, arg3 string) error {
 		if arg3 == "" {
 			exitGracefully(errors.New("you must give the handler a name"))
 		}
-		// TODO: Somewhere down the road, get rid of the `/myapp` hardcoding
-		fileName := fmt.Sprintf("%s/myapp/handlers/%s.go", cel.RootPath, strings.ToLower(arg3))
+		fileName := fmt.Sprintf("%s/handlers/%s.go", cel.RootPath, strings.ToLower(arg3))
 		if fileExists(fileName) {
 			exitGracefully(errors.New(fileName + " already exists"))
 		}
@@ -77,8 +77,7 @@ func doMake(arg2, arg3 string) error {
 		} else {
 			tableName = strings.ToLower(pl.Plural(arg3))
 		}
-		// TODO: Somewhere down the road, get rid of the `/myapp` hardcoding
-		fileName := fmt.Sprintf("%s/myapp/data/%s.go", cel.RootPath, strings.ToLower(modelName))
+		fileName := fmt.Sprintf("%s/data/%s.go", cel.RootPath, strings.ToLower(modelName))
 		if fileExists(fileName) {
 			exitGracefully(errors.New(fileName + " already exists"))
 		}
