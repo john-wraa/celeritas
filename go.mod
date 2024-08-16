@@ -1,4 +1,4 @@
-module github.com/johnwr-response/celeritas
+module github.com/john-wraa/celeritas
 
 go 1.22.5
 

@@ -2,9 +2,10 @@ package main
 
 import (
 	"errors"
-	"github.com/fatih/color"
-	"github.com/johnwr-response/celeritas"
 	"os"
+
+	"github.com/fatih/color"
+	"github.com/john-wraa/celeritas"
 )
 
 const version = "1.0.0"
