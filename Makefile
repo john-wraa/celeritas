@@ -1,3 +1,5 @@
+CLI_NAME=celeritas.exe
+
 ## test: runs all tests
 test:
 	@go test -v ./...
@@ -9,3 +11,7 @@ cover:
 ## coverage: displays test coverage
 coverage:
 	@go test -cover ./...
+
+## build_cli: builds the command line tool dist directory
+dist_cli:
+	@go build -o ./dist/${CLI_NAME} ./cmd/cli
