@@ -21,7 +21,7 @@ import (
 
 	"github.com/CloudyKit/jet/v6"
 	"github.com/john-wraa/celeritas/mailer"
-	"github.com/john-wraa/celeritas/urlsigner"
+	"github.com/john-wraa/celeritas/urlSigner"
 )
 
 // UserLogin displays the login page
@@ -167,7 +167,7 @@ func (h *Handlers) PostForgot(w http.ResponseWriter, r *http.Request) {
 	link := fmt.Sprintf("%s/users/reset-password?email=%s", h.App.Server.URL, email)
 
 	// sign the link
-	sign := urlsigner.Signer{
+	sign := urlSigner.Signer{
 		Secret: []byte(h.App.EncryptionKey),
 	}
 
@@ -207,7 +207,7 @@ func (h *Handlers) ResetPasswordForm(w http.ResponseWriter, r *http.Request) {
 	testURL := fmt.Sprintf("%s%s", h.App.Server.URL, theURL)
 
 	// validate the url
-	signer := urlsigner.Signer{
+	signer := urlSigner.Signer{
 		Secret: []byte(h.App.EncryptionKey),
 	}
 
