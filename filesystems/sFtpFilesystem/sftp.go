@@ -2,8 +2,8 @@ package sFtpFilesystem
 
 import (
 	"fmt"
+	"github.com/john-wraa/celeritas/filesystems"
 	"github.com/pkg/sftp"
-	"github.com/tsawler/celeritas/filesystems"
 	"golang.org/x/crypto/ssh"
 	"io"
 	"log"

@@ -3,7 +3,7 @@ package celeritas
 import (
 	"fmt"
 	"github.com/gabriel-vasile/mimetype"
-	"github.com/tsawler/celeritas/filesystems"
+	"github.com/john-wraa/celeritas/filesystems"
 	"io"
 	"mime/multipart"
 	"net/http"

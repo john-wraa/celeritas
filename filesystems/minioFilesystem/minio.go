@@ -3,9 +3,9 @@ package minioFilesystem
 import (
 	"context"
 	"fmt"
+	"github.com/john-wraa/celeritas/filesystems"
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/tsawler/celeritas/filesystems"
 	"log"
 	"path"
 	"strings"

@@ -2,10 +2,10 @@ package celeritas
 
 import (
 	"fmt"
-	"github.com/tsawler/celeritas/filesystems/minioFilesystem"
-	"github.com/tsawler/celeritas/filesystems/s3Filesystem"
-	"github.com/tsawler/celeritas/filesystems/sFtpFilesystem"
-	"github.com/tsawler/celeritas/filesystems/webdavFilesystem"
+	"github.com/john-wraa/celeritas/filesystems/minioFilesystem"
+	"github.com/john-wraa/celeritas/filesystems/s3Filesystem"
+	"github.com/john-wraa/celeritas/filesystems/sFtpFilesystem"
+	"github.com/john-wraa/celeritas/filesystems/webdavFilesystem"
 	"log"
 	"net"
 	"net/rpc"
@@ -19,12 +19,12 @@ import (
 	"github.com/dgraph-io/badger/v3"
 	"github.com/go-chi/chi/v5"
 	"github.com/gomodule/redigo/redis"
+	"github.com/john-wraa/celeritas/cache"
+	"github.com/john-wraa/celeritas/mailer"
+	"github.com/john-wraa/celeritas/render"
+	"github.com/john-wraa/celeritas/session"
 	"github.com/joho/godotenv"
 	"github.com/robfig/cron/v3"
-	"github.com/tsawler/celeritas/cache"
-	"github.com/tsawler/celeritas/mailer"
-	"github.com/tsawler/celeritas/render"
-	"github.com/tsawler/celeritas/session"
 )
 
 const version = "1.0.0"

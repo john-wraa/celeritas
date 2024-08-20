@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/fatih/color"
-	"github.com/tsawler/celeritas"
+	"github.com/john-wraa/celeritas"
 )
 
 const version = "1.0.0"

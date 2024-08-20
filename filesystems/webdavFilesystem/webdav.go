@@ -2,8 +2,8 @@ package webdavFilesystem
 
 import (
 	"fmt"
+	"github.com/john-wraa/celeritas/filesystems"
 	"github.com/studio-b12/gowebdav"
-	"github.com/tsawler/celeritas/filesystems"
 	"io"
 	"os"
 	"path"
