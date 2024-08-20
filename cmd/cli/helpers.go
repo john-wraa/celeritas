@@ -106,6 +106,13 @@ func updateSourceFiles(path string, fi os.FileInfo, err error) error {
 	if err != nil {
 		return err
 	}
+	if !matched {
+		// Also check go.txt files
+		matched, err = filepath.Match("*.go.txt", fi.Name())
+		if err != nil {
+			return err
+		}
+	}
 
 	// we have a matching file
 	if matched {
