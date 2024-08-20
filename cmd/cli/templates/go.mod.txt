@@ -8,7 +8,6 @@ require (
 	github.com/go-chi/chi/v5 v5.0.4
 	github.com/gorilla/sessions v1.1.1
 	github.com/markbates/goth v1.80.0
-	github.com/tsawler/celeritas v0.0.0
 	github.com/upper/db/v4 v4.2.1
 	golang.org/x/crypto v0.25.0
 )
@@ -131,5 +130,3 @@ require (
 	google.golang.org/protobuf v1.34.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
-
-replace github.com/tsawler/celeritas v0.0.0 => ../celeritas
