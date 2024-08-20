@@ -1,4 +1,4 @@
-package urlsigner
+package urlSigner
 
 import (
 	"fmt"
