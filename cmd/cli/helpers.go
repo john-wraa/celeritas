@@ -1,12 +1,14 @@
 package main
 
 import (
+	"errors"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/joho/godotenv"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/joho/godotenv"
 )
 
 func setup(arg1, _ string) {
@@ -16,19 +18,20 @@ func setup(arg1, _ string) {
 			exitGracefully(err)
 		}
 
-		// Note! This assumes you run the command from a folder that has a `.env` file
 		path, err := os.Getwd()
 		if err != nil {
 			exitGracefully(err)
 		}
 
 		cel.RootPath = path
-		cel.DB.DatabaseType = os.Getenv("DATABASE_TYPE")
+		cel.DB.DataType = os.Getenv("DATABASE_TYPE")
 	}
 }
 
-func getDsn() string {
-	dbType := cel.DB.DatabaseType
+//goland:noinspection GoUnusedFunction
+func getDSN() string {
+	dbType := cel.DB.DataType
+
 	if dbType == "pgx" {
 		dbType = "postgres"
 	}
@@ -42,39 +45,49 @@ func getDsn() string {
 				os.Getenv("DATABASE_HOST"),
 				os.Getenv("DATABASE_PORT"),
 				os.Getenv("DATABASE_NAME"),
-				os.Getenv("DATABASE_SSL_MODE"),
-			)
+				os.Getenv("DATABASE_SSL_MODE"))
 		} else {
 			dsn = fmt.Sprintf("postgres://%s@%s:%s/%s?sslmode=%s",
 				os.Getenv("DATABASE_USER"),
 				os.Getenv("DATABASE_HOST"),
 				os.Getenv("DATABASE_PORT"),
 				os.Getenv("DATABASE_NAME"),
-				os.Getenv("DATABASE_SSL_MODE"),
-			)
+				os.Getenv("DATABASE_SSL_MODE"))
 		}
 		return dsn
 	}
 	return "mysql://" + cel.BuildDSN()
 }
 
+func checkForDB() {
+	dbType := cel.DB.DataType
+	if dbType == "" {
+		exitGracefully(errors.New("no database connection provided in .env"))
+	}
+
+	if !fileExists(cel.RootPath + "/config/database.yml") {
+		exitGracefully(errors.New("/config/database.yml does not exist"))
+	}
+}
+
 func showHelp() {
 	color.Yellow(`Available commands:
 
-    help                - show this help message
-    version             - show version info
-    migrate             - runs all up migrations that have not been run previously
-    migrate down        - reverses the most recent migration
-    migrate reset       - runs all down migrations in reverse order, and then all up migrations
-    make migrate <name> - creates two new up and down migrations in the migrations folder
-    make auth           - creates and run migrations for authentication tables, and creates models and middleware
-    make handler <name> - creates a stub handler in the handlers directory
-    make model <name>   - creates a new model in the data directory
-    make session-store  - creates a table in the database as a session store
-    make key            - creates a new 32 characters encryption key
-    make mail <name>    - creates two starter mail templates from <name> in the mail directory
-
-    `)
+	help                           - show the help commands
+    down                           - put the server into maintenance mode
+    up                             - take the server out of maintenance mode
+	version                        - print application version
+	migrate                        - runs all up migrations that have not been run previously
+	migrate down                   - reverses the most recent migration
+	migrate reset                  - runs all down migrations in reverse order, and then all up migrations
+	make migration <name> <format> - creates two new up and down migrations in the migrations folder;format=sql/fizz (default fizz)
+	make auth                      - creates and runs migrations for authentication tables, and creates models and middleware
+	make handler <name>            - creates a stub handler in the handlers directory
+	make model <name>              - creates a new model in the data directory
+	make session                   - creates a table in the database as a session store
+	make mail <name>               - creates two starter mail templates in the mail directory
+	
+	`)
 }
 
 func updateSourceFiles(path string, fi os.FileInfo, err error) error {
@@ -88,7 +101,7 @@ func updateSourceFiles(path string, fi os.FileInfo, err error) error {
 		return nil
 	}
 
-	// only check .go files
+	// only check go files
 	matched, err := filepath.Match("*.go", fi.Name())
 	if err != nil {
 		return err
@@ -113,6 +126,7 @@ func updateSourceFiles(path string, fi os.FileInfo, err error) error {
 
 	return nil
 }
+
 func updateSource() {
 	// walk entire project folder, including subfolders
 	err := filepath.Walk(".", updateSourceFiles)

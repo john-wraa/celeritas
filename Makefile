@@ -1,24 +1,23 @@
+SHELL=cmd
+BINARY_NAME=celeritasApp.exe
 CLI_NAME=celeritas.exe
 
 ## test: runs all tests
 test:
-	@echo Testing celeritas...
 	@go test -v ./...
-	@echo Done!
 
 ## cover: opens coverage in browser
 cover:
-	@echo Testing and displaying celeritas cover...
-	@go test '-coverprofile=coverage.out' ./...
-	@go tool cover '-html=coverage.out'
-	@echo Done!
+	@go test -coverprofile=coverage.out ./... && go tool cover -html=coverage.out
 
 ## coverage: displays test coverage
 coverage:
-	@echo Testing celeritas coverage...
 	@go test -cover ./...
-	@echo Done!
 
-## build_cli: builds the command line tool dist directory
-dist_cli:
+## build_cli: builds the command line tool celeritas and copies it to myapp
+build_cli:
+	@go build -o ../myapp/${CLI_NAME} ./cmd/cli
+
+## build: builds the command line tool dist directory
+build:
 	@go build -o ./dist/${CLI_NAME} ./cmd/cli

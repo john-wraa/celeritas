@@ -2,10 +2,10 @@ package data
 
 import (
 	"errors"
-	"github.com/john-wraa/celeritas"
+	"time"
+
 	up "github.com/upper/db/v4"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
 // User is the type for a user
@@ -26,22 +26,18 @@ func (u *User) Table() string {
 	return "users"
 }
 
-func (u *User) Validate(validator *celeritas.Validation) {
-	validator.Check(u.LastName != "", "last_name", "Last name must be provided")
-	validator.Check(u.FirstName != "", "first_name", "First name must be provided")
-	validator.Check(u.Email != "", "email", "Email must be provided")
-	validator.IsEmail("email", u.Email)
-}
-
 // GetAll returns a slice of all users
 func (u *User) GetAll() ([]*User, error) {
 	collection := upper.Collection(u.Table())
+
 	var all []*User
-	res := collection.Find().OrderBy("last_name", "first_name")
+
+	res := collection.Find().OrderBy("last_name")
 	err := res.All(&all)
 	if err != nil {
 		return nil, err
 	}
+
 	return all, nil
 }
 
@@ -60,14 +56,9 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	res = collection.Find(up.Cond{"user_id =": theUser.ID, "expiry >": time.Now()}).OrderBy("created_at desc")
 	err = res.One(&token)
 	if err != nil {
-		if !errors.Is(err, up.ErrNilRecord) && !errors.Is(err, up.ErrNoMoreRows) {
+		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
 			return nil, err
 		}
-		// Comparison with errors using equality operators fails on wrapped errors
-		// replaced equality checks with 'errors.is'
-		//if err != iup.ErrNilRecord && err != up.ErrNoMoreRows {
-		//	return nil, err
-		//}
 	}
 
 	theUser.Token = token
@@ -75,11 +66,12 @@ func (u *User) GetByEmail(email string) (*User, error) {
 	return &theUser, nil
 }
 
-// Get gets one user, by id
+// Get gets one user by id
 func (u *User) Get(id int) (*User, error) {
 	var theUser User
 	collection := upper.Collection(u.Table())
 	res := collection.Find(up.Cond{"id =": id})
+
 	err := res.One(&theUser)
 	if err != nil {
 		return nil, err
@@ -90,10 +82,11 @@ func (u *User) Get(id int) (*User, error) {
 	res = collection.Find(up.Cond{"user_id =": theUser.ID, "expiry >": time.Now()}).OrderBy("created_at desc")
 	err = res.One(&token)
 	if err != nil {
-		if !errors.Is(err, up.ErrNilRecord) && !errors.Is(err, up.ErrNoMoreRows) {
+		if err != up.ErrNilRecord && err != up.ErrNoMoreRows {
 			return nil, err
 		}
 	}
+
 	theUser.Token = token
 
 	return &theUser, nil
@@ -120,6 +113,7 @@ func (u *User) Delete(id int) error {
 		return err
 	}
 	return nil
+
 }
 
 // Insert inserts a new user, and returns the newly inserted id
@@ -139,42 +133,50 @@ func (u *User) Insert(theUser User) (int, error) {
 		return 0, err
 	}
 
-	id := GetInsertID(res.ID())
+	id := getInsertID(res.ID())
 
 	return id, nil
 }
 
-// ResetPassword resets a user's password, by id, using supplied password
+// ResetPassword resets a users's password, by id, using supplied password
 func (u *User) ResetPassword(id int, password string) error {
 	newHash, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return err
 	}
+
 	theUser, err := u.Get(id)
 	if err != nil {
 		return err
 	}
+
 	u.Password = string(newHash)
+
 	err = theUser.Update(*u)
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
-// PasswordMatches verifies a supplied password against the hash stored in the database. It returns true if valid,
-// and false if the password does not match, or if there is an error. Note that an error is only returned if
-// something goes wrong (since an invalid password is not an error -- it's just the wrong password)
+// PasswordMatches verifies a supplied password against the hash stored in the database.
+// It returns true if valid, and false if the password does not match, or if there is an
+// error. Note that an error is only returned if something goes wrong (since an invalid password
+// is not an error -- it's just the wrong password))
 func (u *User) PasswordMatches(plainText string) (bool, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(plainText))
 	if err != nil {
 		switch {
 		case errors.Is(err, bcrypt.ErrMismatchedHashAndPassword):
+			// invalid password
 			return false, nil
 		default:
+			// some kind of error occurred
 			return false, err
 		}
 	}
+
 	return true, nil
 }
 
@@ -182,7 +184,7 @@ func (u *User) CheckForRememberToken(id int, token string) bool {
 	var rememberToken RememberToken
 	rt := RememberToken{}
 	collection := upper.Collection(rt.Table())
-	res := collection.Find(up.Cond{"user_id =": id, "remember_token =": token})
+	res := collection.Find(up.Cond{"user_id": id, "remember_token": token})
 	err := res.One(&rememberToken)
 	return err == nil
 }

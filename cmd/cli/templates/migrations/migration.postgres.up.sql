@@ -10,7 +10,7 @@
 -- CREATE OR REPLACE FUNCTION trigger_set_timestamp()
 -- RETURNS TRIGGER AS $$
 -- BEGIN
---   NEW.updated_at = (now() at time zone 'utc');
+--   NEW.updated_at = NOW();
 -- RETURN NEW;
 -- END;
 -- $$ LANGUAGE plpgsql;

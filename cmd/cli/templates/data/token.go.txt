@@ -1,14 +1,15 @@
 package data
 
 import (
-	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base32"
 	"errors"
-	up "github.com/upper/db/v4"
+	"math/rand"
 	"net/http"
 	"strings"
 	"time"
+
+	up "github.com/upper/db/v4"
 )
 
 type Token struct {
@@ -30,6 +31,7 @@ func (t *Token) Table() string {
 func (t *Token) GetUserForToken(token string) (*User, error) {
 	var u User
 	var theToken Token
+
 	collection := upper.Collection(t.Table())
 	res := collection.Find(up.Cond{"token": token})
 	err := res.One(&theToken)
@@ -43,6 +45,7 @@ func (t *Token) GetUserForToken(token string) (*User, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	u.Token = theToken
 
 	return &u, nil
@@ -56,6 +59,7 @@ func (t *Token) GetTokensForUser(id int) ([]*Token, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return tokens, nil
 }
 
@@ -67,6 +71,7 @@ func (t *Token) Get(id int) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &token, nil
 }
 
@@ -78,6 +83,7 @@ func (t *Token) GetByToken(plainText string) (*Token, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	return &token, nil
 }
 
@@ -88,6 +94,7 @@ func (t *Token) Delete(id int) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -98,6 +105,7 @@ func (t *Token) DeleteByToken(plainText string) error {
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -111,8 +119,8 @@ func (t *Token) Insert(token Token, u User) error {
 		return err
 	}
 
-	token.CreatedAt = time.Now().UTC()
-	token.UpdatedAt = time.Now().UTC()
+	token.CreatedAt = time.Now()
+	token.UpdatedAt = time.Now()
 	token.FirstName = u.FirstName
 	token.Email = u.Email
 
@@ -127,7 +135,7 @@ func (t *Token) Insert(token Token, u User) error {
 func (t *Token) GenerateToken(userID int, ttl time.Duration) (*Token, error) {
 	token := &Token{
 		UserID:  userID,
-		Expires: time.Now().UTC().Add(ttl),
+		Expires: time.Now().Add(ttl),
 	}
 
 	randomBytes := make([]byte, 16)
@@ -148,25 +156,32 @@ func (t *Token) AuthenticateToken(r *http.Request) (*User, error) {
 	if authorizationHeader == "" {
 		return nil, errors.New("no authorization header received")
 	}
+
 	headerParts := strings.Split(authorizationHeader, " ")
 	if len(headerParts) != 2 || headerParts[0] != "Bearer" {
 		return nil, errors.New("no authorization header received")
 	}
+
 	token := headerParts[1]
+
 	if len(token) != 26 {
-		return nil, errors.New("token has wrong length")
+		return nil, errors.New("token wrong size")
 	}
+
 	tkn, err := t.GetByToken(token)
 	if err != nil {
 		return nil, errors.New("no matching token found")
 	}
-	if tkn.Expires.Before(time.Now().UTC()) {
-		return nil, errors.New("token expired")
+
+	if tkn.Expires.Before(time.Now()) {
+		return nil, errors.New("expired token")
 	}
+
 	user, err := t.GetUserForToken(token)
 	if err != nil {
 		return nil, errors.New("no matching user found")
 	}
+
 	return user, nil
 }
 
@@ -175,11 +190,14 @@ func (t *Token) ValidToken(token string) (bool, error) {
 	if err != nil {
 		return false, errors.New("no matching user found")
 	}
+
 	if user.Token.PlainText == "" {
 		return false, errors.New("no matching token found")
 	}
+
 	if user.Token.Expires.Before(time.Now()) {
-		return false, errors.New("token expired")
+		return false, errors.New("expired token")
 	}
+
 	return true, nil
 }

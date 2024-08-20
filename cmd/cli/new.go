@@ -2,33 +2,35 @@ package main
 
 import (
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/go-git/go-git/v5"
 	"io"
 	"log"
 	"os"
 	"os/exec"
 	"runtime"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/go-git/go-git/v5"
 )
 
 var appURL string
 
-func doNew(args2 string) {
-	appName := strings.ToLower(args2)
+func doNew(appName string) {
+	appName = strings.ToLower(appName)
 	appURL = appName
 
 	// sanitize the application name (convert url to single word)
 	if strings.Contains(appName, "/") {
 		exploded := strings.SplitAfter(appName, "/")
-		appName = exploded[len(exploded)-1]
+		appName = exploded[(len(exploded) - 1)]
 	}
-	log.Println("App name is:", appName)
+
+	log.Println("App name is", appName)
 
 	// git clone the skeleton application
 	color.Green("\tCloning repository...")
 	_, err := git.PlainClone("./"+appName, false, &git.CloneOptions{
-		URL:      "https://github.com/john-wraa/celeritas-app.git",
+		URL:      "https://github.com/tsawler/celeritas-app.git",
 		Progress: os.Stdout,
 		Depth:    1,
 	})
@@ -36,7 +38,7 @@ func doNew(args2 string) {
 		exitGracefully(err)
 	}
 
-	// remove the .git directory
+	// remove .git directory
 	err = os.RemoveAll(fmt.Sprintf("./%s/.git", appName))
 	if err != nil {
 		exitGracefully(err)
@@ -59,56 +61,72 @@ func doNew(args2 string) {
 	}
 
 	// create a makefile
-	color.Yellow("\tCreating Makefile file...")
-	var sourceFile string
 	if runtime.GOOS == "windows" {
-		sourceFile = "Makefile.windows"
-	} else {
-		sourceFile = "Makefile.mac"
-	}
-	source, err := os.Open(fmt.Sprintf("./%s/%s", appName, sourceFile))
-	if err != nil {
-		exitGracefully(err)
-	}
-	defer func(source *os.File) {
-		err = source.Close()
-	}(source)
-	destination, err := os.Create(fmt.Sprintf("./%s/Makefile", appName))
-	if err != nil {
-		exitGracefully(err)
-	}
-	defer func(destination *os.File) {
-		err = destination.Close()
-	}(destination)
-	_, err = io.Copy(destination, source)
-	if err != nil {
-		exitGracefully(err)
-	}
-	_ = source.Close()
+		source, err := os.Open(fmt.Sprintf("./%s/Makefile.windows", appName))
+		if err != nil {
+			exitGracefully(err)
+		}
+		defer func(source *os.File) {
+			err = source.Close()
+		}(source)
 
-	_ = os.Remove(fmt.Sprintf("./%s/Makefile.mac", appName))
-	_ = os.Remove(fmt.Sprintf("./%s/Makefile.windows", appName))
+		destination, err := os.Create(fmt.Sprintf("./%s/Makefile", appName))
+		if err != nil {
+			exitGracefully(err)
+		}
+		defer func(destination *os.File) {
+			err = destination.Close()
+		}(destination)
+
+		_, err = io.Copy(destination, source)
+		if err != nil {
+			exitGracefully(err)
+		}
+	} else {
+		source, err := os.Open(fmt.Sprintf("./%s/Makefile.mac", appName))
+		if err != nil {
+			exitGracefully(err)
+		}
+		defer func(source *os.File) {
+			err = source.Close()
+		}(source)
+
+		destination, err := os.Create(fmt.Sprintf("./%s/Makefile", appName))
+		if err != nil {
+			exitGracefully(err)
+		}
+		defer func(destination *os.File) {
+			err = destination.Close()
+		}(destination)
+
+		_, err = io.Copy(destination, source)
+		if err != nil {
+			exitGracefully(err)
+		}
+	}
+	_ = os.Remove("./" + appName + "/Makefile.mac")
+	_ = os.Remove("./" + appName + "/Makefile.windows")
 
 	// update the go.mod file
 	color.Yellow("\tCreating go.mod file...")
-	_ = os.Remove(fmt.Sprintf("./%s/go.mod", appName))
+	_ = os.Remove("./" + appName + "/go.mod")
+
 	data, err = templateFS.ReadFile("templates/go.mod.txt")
 	if err != nil {
 		exitGracefully(err)
 	}
+
 	mod := string(data)
 	mod = strings.ReplaceAll(mod, "${APP_NAME}", appURL)
-	err = copyDataToFile([]byte(mod), fmt.Sprintf("./%s/go.mod", appName))
+
+	err = copyDataToFile([]byte(mod), "./"+appName+"/go.mod")
 	if err != nil {
 		exitGracefully(err)
 	}
 
-	// update the existing .go files with correct name/imports
+	// update existing .go files with correct name/imports
 	color.Yellow("\tUpdating source files...")
-	err = os.Chdir(fmt.Sprintf("./%s", appName))
-	if err != nil {
-		exitGracefully(err)
-	}
+	_ = os.Chdir("./" + appName)
 	updateSource()
 
 	// run go mod tidy in the project directory
@@ -118,6 +136,7 @@ func doNew(args2 string) {
 	if err != nil {
 		exitGracefully(err)
 	}
-	color.Green(fmt.Sprintf("Done building %s", appURL))
-	color.Green(fmt.Sprintf("Now, go build something awesome..."))
+
+	color.Green("Done building " + appURL)
+	color.Green("Go build something awesome")
 }

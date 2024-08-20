@@ -12,20 +12,23 @@ func TestRedisCache_Has(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("Foo found in cache, and it shouldn't be there")
+		t.Error("foo found in cache, and it shouldn't be there")
 	}
 
 	err = testRedisCache.Set("foo", "bar")
 	if err != nil {
 		t.Error(err)
 	}
+
 	inCache, err = testRedisCache.Has("foo")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if !inCache {
-		t.Error("Foo not found in cache, but it should be there")
+		t.Error("foo not found in cache, but it should be there")
 	}
 }
 
@@ -34,12 +37,14 @@ func TestRedisCache_Get(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	x, err := testRedisCache.Get("foo")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if x != "bar" {
-		t.Error("Expected bar, got ", x)
+		t.Error("did not get correct value from cache")
 	}
 }
 
@@ -48,16 +53,19 @@ func TestRedisCache_Forget(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	err = testRedisCache.Forget("alpha")
 	if err != nil {
 		t.Error(err)
 	}
+
 	inCache, err := testRedisCache.Has("alpha")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("Alpha found in cache, and it shouldn't be there")
+		t.Error("alpha found in cache, and it should not be there")
 	}
 }
 
@@ -76,21 +84,25 @@ func TestRedisCache_Empty(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("Alpha found in cache, and it shouldn't be there")
+		t.Error("alpha found in cache, and it should not be there")
 	}
+
 }
 
 func TestRedisCache_EmptyByMatch(t *testing.T) {
-	err := testRedisCache.Set("alpha", "theta")
+	err := testRedisCache.Set("alpha", "foo")
 	if err != nil {
 		t.Error(err)
 	}
-	err = testRedisCache.Set("alpha2", "theta")
+
+	err = testRedisCache.Set("alpha2", "foo")
 	if err != nil {
 		t.Error(err)
 	}
-	err = testRedisCache.Set("beta", "theta")
+
+	err = testRedisCache.Set("beta", "foo")
 	if err != nil {
 		t.Error(err)
 	}
@@ -104,24 +116,27 @@ func TestRedisCache_EmptyByMatch(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("Alpha found in cache, and it shouldn't be there")
+		t.Error("alpha found in cache, and it should not be there")
 	}
 
 	inCache, err = testRedisCache.Has("alpha2")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("Alpha2 found in cache, and it shouldn't be there")
+		t.Error("alpha2 found in cache, and it should not be there")
 	}
 
 	inCache, err = testRedisCache.Has("beta")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if !inCache {
-		t.Error("Beta not found in cache, and it should be there")
+		t.Error("beta not found in cache, and it should be there")
 	}
 }
 
@@ -132,8 +147,10 @@ func TestEncodeDecode(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	_, err = decode(string(bytes))
 	if err != nil {
 		t.Error(err)
 	}
+
 }

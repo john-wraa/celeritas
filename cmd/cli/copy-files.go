@@ -3,14 +3,14 @@ package main
 import (
 	"embed"
 	"errors"
+	"io/ioutil"
 	"os"
 )
 
 //go:embed templates
 var templateFS embed.FS
 
-func copyFileFromTemplate(templatePath, targetFile string) error {
-	// Check to ensure file does not already exist
+func copyFilefromTemplate(templatePath, targetFile string) error {
 	if fileExists(targetFile) {
 		return errors.New(targetFile + " already exists!")
 	}
@@ -29,15 +29,15 @@ func copyFileFromTemplate(templatePath, targetFile string) error {
 }
 
 func copyDataToFile(data []byte, to string) error {
-	err := os.WriteFile(to, data, 0644)
+	err := ioutil.WriteFile(to, data, 0644)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func fileExists(filename string) bool {
-	if _, err := os.Stat(filename); os.IsNotExist(err) {
+func fileExists(fileToCheck string) bool {
+	if _, err := os.Stat(fileToCheck); os.IsNotExist(err) {
 		return false
 	}
 	return true

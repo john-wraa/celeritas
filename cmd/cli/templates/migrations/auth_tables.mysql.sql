@@ -12,7 +12,7 @@ CREATE TABLE `users` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `users_email_unique` (`email`),
     KEY `users_email_index` (`email`)
-    ) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4;
 
 drop table if exists remember_tokens cascade;
 
@@ -26,7 +26,7 @@ CREATE TABLE `remember_tokens` (
     KEY `remember_token` (`remember_token`),
     KEY `remember_tokens_user_id_foreign` (`user_id`),
     CONSTRAINT `remember_tokens_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-    ) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8;
 
 drop table if exists tokens cascade;
 
@@ -42,4 +42,4 @@ CREATE TABLE `tokens` (
     `expiry` datetime NOT NULL,
     PRIMARY KEY (`id`),
     FOREIGN KEY (user_id) REFERENCES users(id) ON UPDATE cascade ON DELETE cascade
-    ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8mb4;

@@ -1,12 +1,13 @@
 package mailer
 
 import (
-	"github.com/ory/dockertest/v3"
-	"github.com/ory/dockertest/v3/docker"
 	"log"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/ory/dockertest/v3"
+	"github.com/ory/dockertest/v3/docker"
 )
 
 var pool *dockertest.Pool
@@ -27,10 +28,10 @@ var mailer = Mail{
 func TestMain(m *testing.M) {
 	p, err := dockertest.NewPool("")
 	if err != nil {
-		log.Fatalf("Could not connect to docker: %s", err)
+		log.Fatal("could not connect to docker", err)
 	}
 	pool = p
-	//goland:noinspection SpellCheckingInspection
+
 	opts := dockertest.RunOptions{
 		Repository:   "mailhog/mailhog",
 		Tag:          "latest",
@@ -38,18 +39,19 @@ func TestMain(m *testing.M) {
 		ExposedPorts: []string{"1025", "8025"},
 		PortBindings: map[docker.Port][]docker.PortBinding{
 			"1025": {
-				{HostIP: "0,0,0,0", HostPort: "1026"},
+				{HostIP: "0.0.0.0", HostPort: "1026"},
 			},
 			"8025": {
-				{HostIP: "0,0,0,0", HostPort: "8026"},
+				{HostIP: "0.0.0.0", HostPort: "8026"},
 			},
 		},
 	}
 
-	resource, err = pool.RunWithOptions(&opts)
+	resource, err := pool.RunWithOptions(&opts)
 	if err != nil {
+		log.Println(err)
 		_ = pool.Purge(resource)
-		log.Fatalf("Could not start resource: %s", err)
+		log.Fatal("Could not start resource")
 	}
 
 	time.Sleep(2 * time.Second)
@@ -59,7 +61,7 @@ func TestMain(m *testing.M) {
 	code := m.Run()
 
 	if err := pool.Purge(resource); err != nil {
-		log.Fatalf("Could not purge resource: %s", err)
+		log.Fatalf("could not purge resource: %s", err)
 	}
 
 	os.Exit(code)

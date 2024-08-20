@@ -21,7 +21,6 @@ var pageData = []struct {
 }
 
 func TestRender_Page(t *testing.T) {
-
 	for _, e := range pageData {
 		r, err := http.NewRequest("GET", "/some-url", nil)
 		if err != nil {
@@ -55,9 +54,10 @@ func TestRender_GoPage(t *testing.T) {
 
 	testRenderer.Renderer = "go"
 	testRenderer.RootPath = "./testdata"
+
 	err = testRenderer.Page(w, r, "home", nil, nil)
 	if err != nil {
-		t.Error("Error rendering page:", err)
+		t.Error("Error rendering page", err)
 	}
 
 }
@@ -70,9 +70,10 @@ func TestRender_JetPage(t *testing.T) {
 	}
 
 	testRenderer.Renderer = "jet"
+
 	err = testRenderer.Page(w, r, "home", nil, nil)
 	if err != nil {
-		t.Error("Error rendering jet page:", err)
+		t.Error("Error rendering page", err)
 	}
 
 }

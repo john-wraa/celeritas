@@ -5,53 +5,61 @@ import (
 	"testing"
 )
 
-var testMsg = Message{
-	From:        "me@here.com",
-	FromName:    "Joe",
-	To:          "you@there.com",
-	Subject:     "Test",
-	Template:    "test",
-	Attachments: []string{"./testdata/mail/test.html.gohtml"},
-}
-
 func TestMail_SendSMTPMessage(t *testing.T) {
-	err := mailer.SendSMTPMessage(testMsg)
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
+
+	err := mailer.SendSMTPMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestMail_SendUsingChan(t *testing.T) {
-	mailer.Jobs <- testMsg
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
+
+	mailer.Jobs <- msg
 	res := <-mailer.Results
 	if res.Error != nil {
-		t.Error(errors.New("failed to send using chan"))
+		t.Error(errors.New("failed to send over channel"))
 	}
-	originalTestMsg := testMsg
-	testMsg.To = "not_an_email_address"
-	mailer.Jobs <- testMsg
+
+	msg.To = "not_an_email_address"
+	mailer.Jobs <- msg
 	res = <-mailer.Results
 	if res.Error == nil {
 		t.Error(errors.New("no error received with invalid to address"))
 	}
-	testMsg = originalTestMsg
 }
 
 func TestMail_SendUsingAPI(t *testing.T) {
 	msg := Message{
 		To:          "you@there.com",
-		Subject:     "Test",
+		Subject:     "test",
 		Template:    "test",
-		Attachments: []string{"./testdata/mail/test.html.gohtml"},
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
 	}
 
 	mailer.API = "unknown"
-	mailer.APIKey = "abs123"
-	mailer.APIUrl = "https://www.fake.fake"
+	mailer.APIKey = "abc123"
+	mailer.APIUrl = "https://www.fake.com"
 
 	err := mailer.SendUsingAPI(msg, "unknown")
 	if err == nil {
-		t.Error(errors.New("no error received with invalid API"))
+		t.Error(err)
 	}
 	mailer.API = ""
 	mailer.APIKey = ""
@@ -59,32 +67,59 @@ func TestMail_SendUsingAPI(t *testing.T) {
 }
 
 func TestMail_buildHTMLMessage(t *testing.T) {
-	_, err := mailer.buildHTMLMessage(testMsg)
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
+
+	_, err := mailer.buildHTMLMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
-func TestMail_buildPlainTextMessage(t *testing.T) {
-	_, err := mailer.buildPlainTextMessage(testMsg)
+func TestMail_buildPlainMessage(t *testing.T) {
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
+
+	_, err := mailer.buildPlainTextMessage(msg)
 	if err != nil {
 		t.Error(err)
 	}
 }
 
 func TestMail_send(t *testing.T) {
-	err := mailer.Send(testMsg)
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
+
+	err := mailer.Send(msg)
 	if err != nil {
 		t.Error(err)
 	}
 
 	mailer.API = "unknown"
-	mailer.APIKey = "abs123"
-	mailer.APIUrl = "https://www.fake.fake"
+	mailer.APIKey = "abc123"
+	mailer.APIUrl = "https://www.fake.com"
 
-	err = mailer.Send(testMsg)
+	err = mailer.Send(msg)
 	if err == nil {
-		t.Error(err)
+		t.Error("did not not get an error when we should have")
 	}
 
 	mailer.API = ""
@@ -93,10 +128,17 @@ func TestMail_send(t *testing.T) {
 }
 
 func TestMail_ChooseAPI(t *testing.T) {
+	msg := Message{
+		From:        "me@here.com",
+		FromName:    "Joe",
+		To:          "you@there.com",
+		Subject:     "test",
+		Template:    "test",
+		Attachments: []string{"./testdata/mail/test.html.tmpl"},
+	}
 	mailer.API = "unknown"
-	err := mailer.ChooseAPI(testMsg)
+	err := mailer.ChooseAPI(msg)
 	if err == nil {
 		t.Error(err)
 	}
-
 }

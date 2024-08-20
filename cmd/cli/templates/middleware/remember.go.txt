@@ -18,11 +18,11 @@ func (m *Middleware) CheckRemember(next http.Handler) http.Handler {
 				// no cookie, so on to the next middleware
 				next.ServeHTTP(w, r)
 			} else {
-				// cookie found, check it
+				// we found a cookie, so check it
 				key := cookie.Value
 				var u data.User
 				if len(key) > 0 {
-					//cookie has some data, so validate it
+					// cookie has some data, so validate it
 					split := strings.Split(key, "|")
 					uid, hash := split[0], split[1]
 					id, _ := strconv.Atoi(uid)
@@ -39,13 +39,11 @@ func (m *Middleware) CheckRemember(next http.Handler) http.Handler {
 						next.ServeHTTP(w, r)
 					}
 				} else {
-					// key length is zero, so it's probably a leftover cooke
-					// most likely user has not closed browser
+					// key length is zero, so it's probably a leftover cookie (user has not closed browser)
 					m.deleteRememberCookie(w, r)
 					next.ServeHTTP(w, r)
 				}
 			}
-
 		} else {
 			// user is logged in
 			next.ServeHTTP(w, r)
@@ -69,7 +67,7 @@ func (m *Middleware) deleteRememberCookie(w http.ResponseWriter, r *http.Request
 	}
 	http.SetCookie(w, &newCookie)
 
-	// log the user out to be safe
+	// log the user out
 	m.App.Session.Remove(r.Context(), "userID")
 	_ = m.App.Session.Destroy(r.Context())
 	_ = m.App.Session.RenewToken(r.Context())

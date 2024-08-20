@@ -1,20 +1,20 @@
 package cache
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestBadgerCache_Has(t *testing.T) {
 	err := testBadgerCache.Forget("foo")
 	if err != nil {
 		t.Error(err)
 	}
+
 	inCache, err := testBadgerCache.Has("foo")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("foo should not be in cache")
+		t.Error("foo found in cache, and it shouldn't be there")
 	}
 
 	_ = testBadgerCache.Set("foo", "bar")
@@ -22,10 +22,15 @@ func TestBadgerCache_Has(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if !inCache {
-		t.Error("foo should be in cache")
+		t.Error("foo not found in cache")
 	}
+
 	err = testBadgerCache.Forget("foo")
+	if err != nil {
+		t.Error(err)
+	}
 }
 
 func TestBadgerCache_Get(t *testing.T) {
@@ -33,12 +38,14 @@ func TestBadgerCache_Get(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	x, err := testBadgerCache.Get("foo")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if x != "bar" {
-		t.Error("expected bar, got ", x)
+		t.Error("did not get correct value from cache")
 	}
 }
 
@@ -57,9 +64,11 @@ func TestBadgerCache_Forget(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("foo should not be in cache")
+		t.Error("foo found in cache, and it shouldn't be there")
 	}
+
 }
 
 func TestBadgerCache_Empty(t *testing.T) {
@@ -77,8 +86,9 @@ func TestBadgerCache_Empty(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("alpha should not be in cache")
+		t.Error("alpha found in cache, and it shouldn't be there")
 	}
 }
 
@@ -87,10 +97,12 @@ func TestBadgerCache_EmptyByMatch(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	err = testBadgerCache.Set("alpha2", "beta2")
 	if err != nil {
 		t.Error(err)
 	}
+
 	err = testBadgerCache.Set("beta", "beta")
 	if err != nil {
 		t.Error(err)
@@ -105,24 +117,26 @@ func TestBadgerCache_EmptyByMatch(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("alpha should not be in cache")
+		t.Error("alpha found in cache, and it shouldn't be there")
 	}
 
 	inCache, err = testBadgerCache.Has("alpha2")
 	if err != nil {
 		t.Error(err)
 	}
+
 	if inCache {
-		t.Error("alpha2 should not be in cache")
+		t.Error("alpha2 found in cache, and it shouldn't be there")
 	}
 
 	inCache, err = testBadgerCache.Has("beta")
 	if err != nil {
 		t.Error(err)
 	}
-	if !inCache {
-		t.Error("beta should be in cache")
-	}
 
+	if !inCache {
+		t.Error("beta not found in cache, and it should be there")
+	}
 }

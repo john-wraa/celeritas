@@ -1,9 +1,10 @@
 package render
 
 import (
-	"github.com/CloudyKit/jet/v6"
 	"os"
 	"testing"
+
+	"github.com/CloudyKit/jet/v6"
 )
 
 var views = jet.NewSet(

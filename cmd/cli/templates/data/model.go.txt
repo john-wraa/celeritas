@@ -4,22 +4,22 @@ import (
     up "github.com/upper/db/v4"
     "time"
 )
-// $MODEL_NAME$ struct
-type $MODEL_NAME$ struct {
+// $MODELNAME$ struct
+type $MODELNAME$ struct {
     ID        int       `db:"id,omitempty"`
     CreatedAt time.Time `db:"created_at"`
     UpdatedAt time.Time `db:"updated_at"`
 }
 
 // Table returns the table name
-func (t *$MODEL_NAME$) Table() string {
-    return "$TABLE_NAME$"
+func (t *$MODELNAME$) Table() string {
+    return "$TABLENAME$"
 }
 
 // GetAll gets all records from the database, using upper
-func (t *$MODEL_NAME$) GetAll(condition up.Cond) ([]*$MODEL_NAME$, error) {
+func (t *$MODELNAME$) GetAll(condition up.Cond) ([]*$MODELNAME$, error) {
     collection := upper.Collection(t.Table())
-    var all []*$MODEL_NAME$
+    var all []*$MODELNAME$
 
     res := collection.Find(condition)
     err := res.All(&all)
@@ -31,8 +31,8 @@ func (t *$MODEL_NAME$) GetAll(condition up.Cond) ([]*$MODEL_NAME$, error) {
 }
 
 // Get gets one record from the database, by id, using upper
-func (t *$MODEL_NAME$) Get(id int) (*$MODEL_NAME$, error) {
-    var one $MODEL_NAME$
+func (t *$MODELNAME$) Get(id int) (*$MODELNAME$, error) {
+    var one $MODELNAME$
     collection := upper.Collection(t.Table())
 
     res := collection.Find(up.Cond{"id": id})
@@ -44,7 +44,7 @@ func (t *$MODEL_NAME$) Get(id int) (*$MODEL_NAME$, error) {
 }
 
 // Update updates a record in the database, using upper
-func (t *$MODEL_NAME$) Update(m $MODEL_NAME$) error {
+func (t *$MODELNAME$) Update(m $MODELNAME$) error {
     m.UpdatedAt = time.Now()
     collection := upper.Collection(t.Table())
     res := collection.Find(m.ID)
@@ -56,7 +56,7 @@ func (t *$MODEL_NAME$) Update(m $MODEL_NAME$) error {
 }
 
 // Delete deletes a record from the database by id, using upper
-func (t *$MODEL_NAME$) Delete(id int) error {
+func (t *$MODELNAME$) Delete(id int) error {
     collection := upper.Collection(t.Table())
     res := collection.Find(id)
     err := res.Delete()
@@ -67,7 +67,7 @@ func (t *$MODEL_NAME$) Delete(id int) error {
 }
 
 // Insert inserts a model into the database, using upper
-func (t *$MODEL_NAME$) Insert(m $MODEL_NAME$) (int, error) {
+func (t *$MODELNAME$) Insert(m $MODELNAME$) (int, error) {
     m.CreatedAt = time.Now()
     m.UpdatedAt = time.Now()
     collection := upper.Collection(t.Table())
@@ -76,16 +76,16 @@ func (t *$MODEL_NAME$) Insert(m $MODEL_NAME$) (int, error) {
         return 0, err
     }
 
-    id := GetInsertID(res.ID())
+    id := getInsertID(res.ID())
 
     return id, nil
 }
 
 // Builder is an example of using upper's sql builder
-func (t *$MODEL_NAME$) Builder(id int) ([]*$MODEL_NAME$, error) {
+func (t *$MODELNAME$) Builder(id int) ([]*$MODELNAME$, error) {
     collection := upper.Collection(t.Table())
 
-    var result []*$MODEL_NAME$
+    var result []*$MODELNAME$
 
     err := collection.Session().
         SQL().

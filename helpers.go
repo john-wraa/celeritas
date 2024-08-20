@@ -5,19 +5,18 @@ import (
 	"crypto/cipher"
 	"crypto/rand"
 	"encoding/base64"
-	"errors"
 	"io"
 	"os"
 )
 
-//goland:noinspection SpellCheckingInspection
 const (
 	randomString = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321_+"
 )
 
-// RandomString generates a random string of length n from values in the const randomString
+// RandomString generates a random string length n from values in the const randomString
 func (c *Celeritas) RandomString(n int) string {
 	s, r := make([]rune, n), []rune(randomString)
+
 	for i := range s {
 		p, _ := rand.Prime(rand.Reader, len(r))
 		x, y := p.Uint64(), uint64(len(r))
@@ -26,8 +25,8 @@ func (c *Celeritas) RandomString(n int) string {
 	return string(s)
 }
 
-// CreateDirIfNotExists creates a new directory if it does not exist
-func (c *Celeritas) CreateDirIfNotExists(path string) error {
+// CreateDirIfNotExist creates a new directory if it does not exist
+func (c *Celeritas) CreateDirIfNotExist(path string) error {
 	const mode = 0755
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		err := os.Mkdir(path, mode)
@@ -35,6 +34,7 @@ func (c *Celeritas) CreateDirIfNotExists(path string) error {
 			return err
 		}
 	}
+
 	return nil
 }
 
@@ -46,6 +46,7 @@ func (c *Celeritas) CreateFileIfNotExists(path string) error {
 		if err != nil {
 			return err
 		}
+
 		defer func(file *os.File) {
 			_ = file.Close()
 		}(file)
@@ -58,33 +59,42 @@ type Encryption struct {
 }
 
 func (e *Encryption) Encrypt(text string) (string, error) {
-	plainText := []byte(text)
+	plaintext := []byte(text)
+
 	block, err := aes.NewCipher(e.Key)
 	if err != nil {
 		return "", err
 	}
-	cipherText := make([]byte, aes.BlockSize+len(plainText))
-	iv := cipherText[:aes.BlockSize]
+
+	ciphertext := make([]byte, aes.BlockSize+len(plaintext))
+	iv := ciphertext[:aes.BlockSize]
 	if _, err := io.ReadFull(rand.Reader, iv); err != nil {
 		return "", err
 	}
+
 	stream := cipher.NewCFBEncrypter(block, iv)
-	stream.XORKeyStream(cipherText[aes.BlockSize:], plainText)
-	return base64.URLEncoding.EncodeToString(cipherText), nil
+	stream.XORKeyStream(ciphertext[aes.BlockSize:], plaintext)
+
+	return base64.URLEncoding.EncodeToString(ciphertext), nil
 }
 
 func (e *Encryption) Decrypt(cryptoText string) (string, error) {
-	cipherText, _ := base64.URLEncoding.DecodeString(cryptoText)
+	ciphertext, _ := base64.URLEncoding.DecodeString(cryptoText)
+
 	block, err := aes.NewCipher(e.Key)
 	if err != nil {
 		return "", err
 	}
-	if len(cipherText) < aes.BlockSize {
-		return "", errors.New("ciphertext too short")
+
+	if len(ciphertext) < aes.BlockSize {
+		return "", err
 	}
-	iv := cipherText[:aes.BlockSize]
-	cipherText = cipherText[aes.BlockSize:]
+
+	iv := ciphertext[:aes.BlockSize]
+	ciphertext = ciphertext[aes.BlockSize:]
+
 	stream := cipher.NewCFBDecrypter(block, iv)
-	stream.XORKeyStream(cipherText, cipherText)
-	return string(cipherText), nil
+	stream.XORKeyStream(ciphertext, ciphertext)
+
+	return string(ciphertext), nil
 }

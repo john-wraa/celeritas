@@ -1,12 +1,13 @@
 package celeritas
 
 import (
-	"github.com/asaskevich/govalidator"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/asaskevich/govalidator"
 )
 
 type Validation struct {
@@ -63,21 +64,21 @@ func (v *Validation) IsEmail(field, value string) {
 func (v *Validation) IsInt(field, value string) {
 	_, err := strconv.Atoi(value)
 	if err != nil {
-		v.AddError(field, "This field must be a valid integer")
+		v.AddError(field, "This field must be an integer")
 	}
 }
 
 func (v *Validation) IsFloat(field, value string) {
 	_, err := strconv.ParseFloat(value, 64)
 	if err != nil {
-		v.AddError(field, "This field must be a valid floating point number")
+		v.AddError(field, "This field must be a floating point number")
 	}
 }
 
 func (v *Validation) IsDateISO(field, value string) {
 	_, err := time.Parse("2006-01-02", value)
 	if err != nil {
-		v.AddError(field, "This field must be a valid ISO date (YYYY-MM-DD)")
+		v.AddError(field, "This field must be a date in the form of YYYY-MM-DD")
 	}
 }
 
